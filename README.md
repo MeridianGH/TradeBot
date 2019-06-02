@@ -7,8 +7,6 @@
 ![Stars](https://img.shields.io/github/stars/meridianpy/tradebot.svg?style=social) &nbsp;
 ![Watchers](https://img.shields.io/github/watchers/meridianpy/tradebot.svg?label=Watchers&style=social) &nbsp;
 ![Followers](https://img.shields.io/github/followers/meridianpy.svg?label=Followers&style=social)
- 
- ===
 
 This is a Steam trading bot that operates with <abbr title="Team Fortress 2">TF2</abbr> items.
 Currently it only trades with keys.
@@ -34,6 +32,9 @@ Disclaimers
 ===
 * This project heavily relies on the Python library [steampy](https://github.com/bukson/steampy) by [bukson](https://github.com/bukson).
 I want to thank [bukson](https://github.com/bukson) for providing this library, which without it this project would be completely impossible!
+
+* I am also using the [steam](https://github.com/ValvePython/steam) library by [Rossen Georgiev](https://github.com/rossengeorgiev)
+to access the chat in Steam. Thanks for providing this library!
 
 * Also, the [backpack.tf](https://backpack.tf) website which provides the prices for items (currently only keys)
 but without it I couldn't expand the bot's functionality.

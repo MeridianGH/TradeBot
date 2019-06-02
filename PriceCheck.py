@@ -103,7 +103,6 @@ def price_check(item_name):
         for j in price_tag:
             if j in '1234567890.':
                 price += j
-        print(repr(price))
         if i == 0:
             highest_listing = price
         if price == '':
