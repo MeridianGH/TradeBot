@@ -1,6 +1,7 @@
 import time
 from steampy.client import SteamClient
 from urllib.request import Request, urlopen
+from modules.PriceCheck import price_check
 
 # Important variables
 api_key = ''
@@ -34,6 +35,20 @@ def value_to_items(value):
         if scrap == '88':
             items.extend(('Reclaimed Metal', 'Reclaimed Metal', 'Scrap Metal', 'Scrap Metal'))
         return items
+
+
+def items_to_value(items):
+    value = 0
+    for item in items:
+        if item == 'Scrap Metal':
+            value += 0.11
+        elif item == 'Reclaimed Metal':
+            value += 0.33
+        elif item == 'Refined Metal':
+            value += 1.0
+        else:
+            return False
+    return round_to_ref(value)
 
 
 def round_to_ref(value):
@@ -166,7 +181,7 @@ def is_buy(offer: dict) -> bool:
                 return False
             else:
                 items_to_give.append(item)
-        if items_to_give == value_to_items(get_key_price()[2]) or items_to_give <= value_to_items(48):
+        if items_to_value(items_to_give) <= get_key_price()[2] or items_to_value(items_to_give) <= 52:
             return True
         else:
             return False
@@ -189,12 +204,32 @@ def is_sell(offer: dict) -> bool:
                 return False
             else:
                 items_to_get.append(item)
-        if items_to_get == value_to_items(get_key_price()[2]) or items_to_get >= value_to_items(48.11):
+        if items_to_value(items_to_get) >= get_key_price()[2] or items_to_value(items_to_get) >= 53:
             return True
         else:
             return False
     else:
         return False
+
+
+def is_item_buy(offer: dict) -> bool:
+    total_value = 0
+    for item in offer['items_to_receive']:
+        total_value += price_check(item)[0]
+        if total_value >= items_to_value(offer['items_to_give']):
+            return True
+        else:
+            return False
+
+
+def is_item_sell(offer: dict) -> bool:
+    total_value = 0
+    for item in offer['items_to_give']:
+        total_value += price_check(item)[0] + 0.11
+        if total_value <= items_to_value(offer['items_to_receive']):
+            return True
+        else:
+            return False
 
 
 if __name__ == "__main__":
