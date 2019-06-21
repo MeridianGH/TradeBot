@@ -1,50 +1,5 @@
-from urllib.request import Request, urlopen
 import urllib.parse
-
-
-def round_to_ref(value):
-    value = round(value, 2)
-    scrap = str(value)[-2:]
-    if scrap == '.0':
-        scrap = '.00'
-    elif '.' not in str(value):
-        scrap = '.00'
-    else:
-        scrap = int(scrap)
-
-        if 0 < scrap < 6:
-            scrap = '00'
-        elif 6 < scrap < 17:
-            scrap = '11'
-        elif 17 < scrap < 28:
-            scrap = '22'
-        elif 28 < scrap < 39:
-            scrap = '33'
-        elif 39 < scrap < 50:
-            scrap = '44'
-        elif 50 < scrap < 61:
-            scrap = '55'
-        elif 61 < scrap < 72:
-            scrap = '66'
-        elif 72 < scrap < 83:
-            scrap = '77'
-        elif 83 < scrap < 94:
-            scrap = '88'
-        elif 94 < scrap:
-            scrap = '00'
-            value += 1
-
-    value = str(value)[0:-2] + scrap
-
-    return value
-
-
-def get_webpage(link):
-    req = Request(link, headers={'User-Agent': 'Mozilla/5.0'})
-    webpage = urlopen(req).read()
-    webpage = webpage.decode('UTF-8', errors='ignore')
-    print('Searching:', link)
-    return webpage
+from modules.Tools import *
 
 
 def price_check(item_name):
@@ -125,10 +80,56 @@ def price_check(item_name):
     return [csp, highest_listing]
 
 
+def get_key_price():
+    link = 'https://backpack.tf/classifieds?item=Mann+Co.+Supply+Crate+Key&quality=6&tradable=1&craftable=1\
+&australium=-1&killstreak_tier=0'
+    buy_listing = -25
+    buy_array = []
+    sell_listing = -25
+    sell_array = []
+    lowsell = 0
+    maxbuy = 0
+
+    webpage = get_webpage(link)
+
+    for i in range(5):
+        sell_listing = webpage.find("data-listing_intent=\"sell\"", sell_listing + 25)
+        price_sell = webpage.find('data-listing_price', sell_listing)
+        sell_ref = webpage.find('ref', price_sell)
+        price_tag = webpage[sell_ref - 6: sell_ref]
+        price_sell = ''
+        for j in price_tag:
+            if j in '1234567890.':
+                price_sell += j
+        sell_array.append(float(price_sell))
+        if i == 0:
+            lowsell = price_sell
+
+    for i in range(5):
+        buy_listing = webpage.find("data-listing_intent=\"buy\"", buy_listing + 25)
+        price_buy = webpage.find('data-listing_price', buy_listing)
+        buy_ref = webpage.find('ref', price_buy)
+        price_tag = webpage[buy_ref - 6: buy_ref]
+        price_buy = ''
+        for j in price_tag:
+            if j in '1234567890.':
+                price_buy += j
+        buy_array.append(float(price_buy))
+        if i == 0:
+            maxbuy = price_buy
+
+    csp = round_to_ref(sum(sell_array) / len(sell_array))
+    cbp = round_to_ref(sum(buy_array) / len(buy_array))
+    key_price = value_to_items(csp)
+
+    return [key_price, csp, lowsell, cbp, maxbuy]
+
+
 if __name__ == "__main__":
     # execute only if run as a script
-    item = input('Item: ')
-    result = price_check(item)
+    search_item = input('Item: ')
+    result = price_check(search_item)
     print('Median price: ', result[0])
     print('CSP: ', round_to_ref(result[0]))
     print('Highest listing: ', result[1])
+    print(get_key_price())
