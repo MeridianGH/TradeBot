@@ -117,3 +117,4 @@ dmypy.json
 .idea/workspace.xml
 TradeBotPV.py
 ChatModulePV.py
+modules/Deprecated.py

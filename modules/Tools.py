@@ -43,45 +43,39 @@ def items_to_value(items):
 
 
 def round_to_ref(value):
-    value = str(round(value, 2))
-    if '.' not in value:
-        value = value + '.00'
-        trigger = False
-        dot = 2
-        scrap = 0
-    elif len(value) == 4:
-        dot = value.find('.')
-        scrap = value[dot + 1:dot + 2]
-        scrap = int(scrap)
-        trigger = True
+    value = round(value, 2)
+    value_str = str(value)
+    value_int = int(float(value))
+    if '.' not in value_str:
+        scrap = 00
     else:
-        dot = value.find('.')
-        scrap = value[dot + 1:dot + 3]
+        dot = value_str.find('.')
+        scrap = value_str[dot + 1:len(value_str)]
         scrap = int(scrap)
-        trigger = True
-    if trigger:
-        if 0 < scrap < 6 or scrap == 0:
-            scrap = '00'
-        elif 6 < scrap < 17:
-            scrap = '11'
-        elif 17 < scrap < 28:
-            scrap = '22'
-        elif 28 < scrap < 39:
-            scrap = '33'
-        elif 39 < scrap < 50:
-            scrap = '44'
-        elif 50 < scrap < 61:
-            scrap = '55'
-        elif 61 < scrap < 72:
-            scrap = '66'
-        elif 72 < scrap < 83:
-            scrap = '77'
-        elif 83 < scrap < 94:
-            scrap = '88'
-        elif 94 < scrap:
-            scrap = '00'
-            value = str(int(value) + 1)
-        value = value[0:dot + 1] + str(scrap)
+        if len(value_str) - (dot + 1) < 2:
+            scrap = scrap * 10
+    if 0 <= scrap < 6:
+        scrap = '00'
+    elif 6 <= scrap < 17:
+        scrap = '11'
+    elif 17 <= scrap < 28:
+        scrap = '22'
+    elif 28 <= scrap < 39:
+        scrap = '33'
+    elif 39 <= scrap < 50:
+        scrap = '44'
+    elif 50 <= scrap < 61:
+        scrap = '55'
+    elif 61 <= scrap < 72:
+        scrap = '66'
+    elif 72 <= scrap < 83:
+        scrap = '77'
+    elif 83 <= scrap < 94:
+        scrap = '88'
+    elif 94 <= scrap:
+        scrap = '00'
+        value_int += 1
+    value = str(value_int) + '.' + scrap
     return value
 
 
