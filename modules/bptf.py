@@ -1,10 +1,14 @@
-from modules.PriceCheck import get_key_price
 from steampy.models import GameOptions
 
 
-def bp_listing_manager(client, pytf2, stock):
-    bp_listings(client, pytf2, stock)
+def bp_listing_manager(client, pytf2, stock, price):
+    bp_listings(client, pytf2, stock, price)
     bp_heartbeat(pytf2)
+
+
+def get_key_price(pytf2):
+    price = pytf2.bp_get_currencies(parse=False).get('response').get('currencies').get('keys').get('price').get('value')
+    return price
 
 
 def bp_heartbeat(pytf2):
@@ -12,7 +16,7 @@ def bp_heartbeat(pytf2):
     print('Bumped ' + str(bump) + ' listing(s).')
 
 
-def bp_listings(client, pytf2, stock):
+def bp_listings(client, pytf2, stock, price):
     key_count = 0
     item = 0
     inventory = client.get_my_inventory(game=GameOptions('440', '2'))
@@ -22,13 +26,13 @@ def bp_listings(client, pytf2, stock):
             item = str(item)
 
     if 0 < key_count < stock:
-        price = {"metal": float(get_key_price()[1])}
+        price = {"metal": float(price)}
         details = 'I am selling Mann Co. Keys for ' + str(price.get('metal')) + ' refined! My current stock is ' \
                   + str(key_count) + ' out of ' + str(stock) + '. This is an automatic trading bot.'
         data = pytf2.bp_create_listing_create_data(1, price, str(item), offers=1, details=details)
         response = pytf2.bp_create_listing(listings=[data], parse=True)
         print(response)
-        price = {"metal": float(get_key_price()[3])}
+        price = {"metal": float(price[3])}
         details = 'I am buying Mann Co. Keys for ' + str(price.get('metal')) + ' refined! My current stock is ' \
                   + str(key_count) + ' out of ' + str(stock) + '. This is an automatic trading bot.'
         data = pytf2.bp_create_listing_create_data(0, price, 'Mann Co. Supply Crate Key', offers=1, details=details)
@@ -42,7 +46,7 @@ def bp_listings(client, pytf2, stock):
                 pytf2.bp_delete_listing(listing.get('id'))
             elif listing.get('intent') == 0:
                 return
-        price = {"metal": float(get_key_price()[3])}
+        price = {"metal": float(price)}
         details = 'I am buying Mann Co. Keys for ' + str(price.get('metal')) + ' refined! My current stock is ' \
                   + str(key_count) + ' out of ' + str(stock) + '. This is an automatic trading bot.'
         data = pytf2.bp_create_listing_create_data(0, price, 'Mann Co. Supply Crate Key', offers=1, details=details)
@@ -56,7 +60,7 @@ def bp_listings(client, pytf2, stock):
                 pytf2.bp_delete_listing(listing.get('id'))
             elif listing.get('intent') == 1:
                 return
-        price = {"metal": float(get_key_price()[1])}
+        price = {"metal": float(price)}
         details = 'I am selling Mann Co. Keys for ' + str(price.get('metal')) + ' refined! My current stock is ' \
                   + str(key_count) + ' out of ' + str(stock) + '. This is an automatic trading bot.'
         data = pytf2.bp_create_listing_create_data(1, price, str(item), offers=1, details=details)
