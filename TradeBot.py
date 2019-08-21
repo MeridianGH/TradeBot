@@ -5,17 +5,19 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 import pytf2
 from datetime import datetime as time
 
-# Important variables
-api_key = ''
-steamguard_path = ''
-username = ''
-password = ''
-owner_id = ''
-bp_api_key = ''
-bp_user_token = ''
+# Credentials
+credentials = open('credentials.txt', 'r')
+lines = credentials.readlines()
+credentials.close()
+api_key = lines[1][:-1]
+steamguard_path = lines[2][:-1]
+username = lines[3][:-1]
+password = lines[4][:-1]
+owner_id = lines[5][:-1]
+bp_api_key = lines[6][:-1]
+bp_user_token = lines[7][:-1]
 
 # Setting up APIs
-
 pytf2 = pytf2.Manager(bp_api_key=bp_api_key, bp_user_token=bp_user_token)
 client = SteamClient(api_key)
 client.login(username, password, steamguard_path)
@@ -55,5 +57,5 @@ scheduler.add_job(bp_listing_manager, 'cron', minute='*/15', args=(client, pytf2
 
 if __name__ == "__main__":
     # execute only if run as a script
-    # scheduler.start()
+    scheduler.start()
     print(price)
